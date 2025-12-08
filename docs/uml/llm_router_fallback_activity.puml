@@ -1,0 +1,31 @@
+@startuml
+title LLMRouter v2.1 — Fallback Decision Flow
+
+start
+
+:Receive prompt + provider;
+
+if (Rate limit exceeded?) then (Yes)
+    :Raise RateLimitError;
+    stop
+endif
+
+:Build fallback chain;
+
+repeat
+    :Select next provider;
+
+    if (Provider ask() successful?) then (Yes)
+        :Write metrics;
+        :Cache result;
+        :Return response;
+        stop
+    endif
+
+    :Record error;
+repeat while (More providers?)
+
+:Raise RuntimeError(all providers failed);
+
+stop
+@enduml

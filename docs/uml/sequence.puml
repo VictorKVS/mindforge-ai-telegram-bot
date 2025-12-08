@@ -1,0 +1,35 @@
+@startuml
+skinparam backgroundColor #0d0d0d
+skinparam defaultFontColor #00eaff
+skinparam ArrowColor #00eaff
+skinparam sequenceMessageAlign center
+
+actor User
+participant Telegram
+participant BotHandler as BH
+participant SecurityFilter as SF
+participant UAG
+participant RAGAPI
+participant RAG
+participant LLM
+participant Logger
+
+User -> Telegram: send message
+Telegram -> BH: update
+BH -> SF: validate(input)
+SF -> SF: entropy check
+SF -> SF: block jailbreak
+SF -> UAG: sanitize & forward
+
+BH -> RAGAPI: POST /rag/query
+RAGAPI -> RAG: run retrieval
+RAG -> RAGAPI: context data
+
+RAGAPI -> LLM: enriched_prompt
+LLM -> UAG: response
+UAG -> BH: safe_response
+
+BH -> Logger: audit
+BH -> User: reply
+
+@enduml

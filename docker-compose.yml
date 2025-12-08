@@ -1,0 +1,54 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.api
+    container_name: mindforge_api
+    restart: on-failure
+    environment:
+      - ENV=prod
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - mindforge
+
+  bot:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.bot
+    container_name: mindforge_bot
+    restart: on-failure
+    environment:
+      - ENV=prod
+    depends_on:
+      api:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    networks:
+      - mindforge
+
+  redis:
+    image: redis:7
+    container_name: mindforge_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - mindforge
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+networks:
+  mindforge:
+    driver: bridge

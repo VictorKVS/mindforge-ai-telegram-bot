@@ -1,0 +1,40 @@
+@startuml
+title LLMRouter v2.1 — Sequence Diagram (ask)
+
+actor User
+participant "LLMRouter" as Router
+participant "RateLimiter" as Rate
+participant "Cache" as Cache
+participant "ProviderClient" as Provider
+participant "FallbackChain" as Fallback
+
+User -> Router: ask(prompt, provider)
+activate Router
+
+Router -> Rate: check_rate_limit(provider)
+Rate --> Router: ok / limit reached
+
+Router -> Router: build_fallback_chain(provider)
+Router -> Cache: _cached_ask(prompt, provider)
+alt cache hit
+    Cache --> Router: result
+    Router --> User: result
+else cache miss
+    loop for each model in fallback chain
+        Router -> Provider: ask(prompt)
+        alt success
+            Provider --> Router: response
+            Router -> Cache: store in cache
+            Router --> User: response
+            deactivate Router
+            return
+        else failure
+            Provider --> Router: error
+            Router -> Fallback: try next provider
+        end
+    end
+
+    Router -> User: RuntimeError(all providers failed)
+end
+
+@enduml

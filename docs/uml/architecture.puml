@@ -1,0 +1,40 @@
+@startuml
+skinparam backgroundColor #0d0d0d
+skinparam defaultFontColor #00eaff
+skinparam ArrowColor #00eaff
+skinparam PackageBorderColor #00eaff
+
+package "Telegram Layer" {
+  actor User
+  participant Bot
+}
+
+package "Security Layer" {
+  participant SecurityFilter
+  participant UAG
+}
+
+package "AI Engine" {
+  participant LLM
+  participant RAG
+}
+
+package "API Layer" {
+  participant "POST /rag/query" as RAGAPI
+}
+
+User -> Bot: send message
+Bot -> SecurityFilter: validate
+SecurityFilter -> UAG: sanitize & forward
+UAG -> LLM: safe_prompt
+LLM -> RAG: request_context
+RAG -> LLM: enriched_prompt
+LLM -> UAG: response
+UAG -> Bot: safe_response
+Bot -> User: reply
+
+Bot -> RAGAPI: POST /rag/query
+RAGAPI -> RAG: retrieve()
+RAG -> RAGAPI: context data
+
+@enduml

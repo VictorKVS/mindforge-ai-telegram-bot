@@ -1,0 +1,30 @@
+site_name: MindForge AI Telegram Bot
+site_url: https://victorkvs.github.io/mindforge-ai-telegram-bot/
+repo_url: https://github.com/VictorKVS/mindforge-ai-telegram-bot
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: cyan
+      accent: pink
+markdown_extensions:
+  - admonition
+  - footnotes
+  - codehilite
+  - tables
+  - toc:
+      permalink: true
+plugins:
+  - search
+  - mkdocstrings
+  - plantuml:
+      puml_url: https://www.plantuml.com/plantuml/svg/
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - Security: security.md
+  - RAG: rag.md
+  - API: api.md
+  - UML Diagrams:
+      - Architecture Diagram: uml/architecture.puml
+      - Sequence Diagram: uml/sequence.puml

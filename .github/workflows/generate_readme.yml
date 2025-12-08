@@ -1,0 +1,36 @@
+name: Generate README
+
+on:
+  push:
+    paths:
+      - docs/templates/**
+      - docs/mindforge_ai_telegram_bot_shema.md
+  workflow_dispatch:
+
+jobs:
+  build-readme:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build README from templates
+        run: |
+          echo "🔧 Building README.md..."
+          cat docs/templates/readme_header.md \
+              docs/templates/readme_body.md \
+              docs/templates/readme_footer.md > README.md
+
+      - name: Validate Architecture Sync
+        run: |
+          if ! grep -q "mindforge_ai_telegram_bot_shema.md" README.md; then
+            echo "❌ README must reference architecture schema!"
+            exit 1
+          fi
+
+      - name: Commit README if changed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto-update README from templates"
+          file_pattern: README.md

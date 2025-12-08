@@ -1,0 +1,37 @@
+@startuml
+title LLMRouter v2.1 — Component View
+
+package "LLMRouter" {
+    [LLMRouter] --> [RateLimiter]
+    [LLMRouter] --> [FallbackManager]
+    [LLMRouter] --> [CacheManager]
+    [LLMRouter] --> [Metrics]
+    [LLMRouter] --> [Config]
+}
+
+package "LLM Clients" {
+    [OpenAIClient]
+    [GigaChatClient]
+    [LlamaClient]
+    [QwenClient]
+    [DeepSeekClient]
+}
+
+LLMRouter --> OpenAIClient
+LLMRouter --> GigaChatClient
+LLMRouter --> LlamaClient
+LLMRouter --> QwenClient
+LLMRouter --> DeepSeekClient
+
+note top of LLMRouter
+Handles routing, metrics,
+fallback, caching,
+rate limiting, async
+end note
+
+note right of LlamaClient
+Local model (Ollama)
+Preferred RU fallback
+end note
+
+@enduml

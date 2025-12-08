@@ -1,0 +1,18 @@
+# .github/workflows/architecture_check.yml
+name: Architecture Sync
+
+on: [push, pull_request]
+
+jobs:
+  check-schema:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check schema freshness
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -v "mindforge_ai_telegram_bot_shema.md" | grep -E "src|docs|tests"; then
+             echo "❌ ARCHITECTURE MISMATCH: Schema not updated!"
+             exit 1
+          fi
+          echo "✔ Schema is synchronized."

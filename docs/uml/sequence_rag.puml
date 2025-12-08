@@ -1,0 +1,33 @@
+@startuml
+skinparam backgroundColor #0d0d0d
+skinparam defaultFontColor #00eaff
+skinparam ArrowColor #00eaff
+skinparam ParticipantBorderColor #00eaff
+skinparam ParticipantBackgroundColor #111111
+
+actor User
+participant Telegram
+participant BotHandler as BH
+participant SecurityFilter as SF
+participant UAG
+participant RAG_API as RAGAPI
+participant RAG
+participant LLM
+participant Logger
+
+User -> Telegram: send message
+Telegram -> BH: update received
+BH -> SF: validate(input)
+SF -> UAG: sanitize & forward(prompt)
+
+UAG -> RAGAPI: POST /rag/query
+RAGAPI -> RAG: retrieve(query)
+RAG -> RAGAPI: return context
+
+RAGAPI -> LLM: enriched_prompt(context)
+LLM -> UAG: llm_response
+UAG -> BH: safe_response
+
+BH -> Logger: audit_event
+BH -> User: reply
+@enduml
