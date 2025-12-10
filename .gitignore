@@ -24,3 +24,9 @@ build/
 
 # Documentation local cache
 site/
+
+models/
+*.gguf
+*.bin
+*.pt
+*.safetensors
