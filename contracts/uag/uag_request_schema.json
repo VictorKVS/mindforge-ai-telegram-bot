@@ -1,0 +1,17 @@
+{
+  "type": "object",
+  "properties": {
+    "agent_id": { "type": "string" },
+    "intent": { "type": "string" },
+    "query": { "type": "object" },
+    "context": {
+      "type": "object",
+      "properties": {
+        "env": { "type": "string", "enum": ["sandbox", "prod"] },
+        "source": { "type": "string" }
+      },
+      "required": ["env"]
+    }
+  },
+  "required": ["agent_id", "intent", "query", "context"]
+}

@@ -2691,3 +2691,455 @@ UAG-SANDBOX
 и я начну писать первый реальный код, с указанием путей файлов.
 
 ChatGPT может допускать ошибки
+
+Agent L0
+
+Отлично. Начинаем ЭТАП 3 — Agent L0.
+Ниже — первый минимальный, но корректный код, строго по архитектуре.
+Я каждый файл пишу с указанием пути, как ты просил.
+
+▶️ ЭТАП 3 — AGENT L0 (мыслящий, но бесправный)
+Цель этапа
+
+перенести существующий Telegram + LLaMA в Agent L0
+
+запретить любые действия, кроме формирования intent
+
+подготовить агент к подключению к UAG (позже)
+
+1️⃣ Контракты интентов (якорь поведения агента)
+📍 Path
+contracts/intents/agent_intents.yaml
+
+📄 Содержимое
+version: 1
+intents:
+  get_price:
+    description: "Получить цену товара"
+    allowed_roles:
+      - agent_l0
+    schema:
+      type: object
+      properties:
+        product:
+          type: string
+      required: [product]
+
+  get_info:
+    description: "Получить справочную информацию"
+    allowed_roles:
+      - agent_l0
+    schema:
+      type: object
+      properties:
+        topic:
+          type: string
+      required: [topic]
+
+
+🔒 Инвариант: агент может использовать ТОЛЬКО эти intents.
+
+2️⃣ Загрузчик контрактов интентов
+📍 Path
+src/agent/contracts.py
+
+📄 Содержимое
+import yaml
+from pathlib import Path
+
+INTENTS_PATH = Path("contracts/intents/agent_intents.yaml")
+
+
+class IntentRegistry:
+    def __init__(self, path: Path = INTENTS_PATH):
+        with open(path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        self.intents = data.get("intents", {})
+
+    def is_known_intent(self, intent: str) -> bool:
+        return intent in self.intents
+
+    def get_schema(self, intent: str):
+        return self.intents[intent]["schema"]
+
+3️⃣ Intent Recognizer (LLM → intent)
+📍 Path
+src/agent/intent_recognizer.py
+
+📄 Содержимое
+def recognize_intent(text: str) -> dict:
+    """
+    Минимальная L0-реализация.
+    Позже будет заменена на LLM-based extraction.
+    """
+    text_lower = text.lower()
+
+    if "цена" in text_lower or "стоит" in text_lower:
+        return {
+            "intent": "get_price",
+            "params": {
+                "product": text
+            }
+        }
+
+    return {
+        "intent": "get_info",
+        "params": {
+            "topic": text
+        }
+    }
+
+
+⚠️ Сейчас — заглушка, но архитектурно корректная.
+
+4️⃣ Intent Dispatcher (НО БЕЗ ДЕЙСТВИЙ)
+📍 Path
+src/agent/intent_dispatcher.py
+
+📄 Содержимое
+class IntentDispatcher:
+    def dispatch(self, intent_payload: dict) -> dict:
+        """
+        Agent L0 НИЧЕГО НЕ ВЫПОЛНЯЕТ.
+        Он только возвращает intent для UAG.
+        """
+        return {
+            "agent_id": "agent_l0",
+            "intent": intent_payload["intent"],
+            "query": intent_payload["params"]
+        }
+
+
+🔒 Важно: здесь НЕТ вызовов API, БД, провайдеров.
+
+5️⃣ Основной Agent L0
+📍 Path
+src/agent/agent.py
+
+📄 Содержимое
+from .intent_recognizer import recognize_intent
+from .intent_dispatcher import IntentDispatcher
+from .contracts import IntentRegistry
+
+
+class AgentL0:
+    def __init__(self):
+        self.registry = IntentRegistry()
+        self.dispatcher = IntentDispatcher()
+
+    def handle_text(self, text: str) -> dict:
+        intent_payload = recognize_intent(text)
+
+        intent = intent_payload["intent"]
+        if not self.registry.is_known_intent(intent):
+            raise ValueError(f"Unknown intent: {intent}")
+
+        return self.dispatcher.dispatch(intent_payload)
+
+6️⃣ Entry Point (Telegram / CLI / тесты)
+📍 Path
+src/agent/entrypoint.py
+
+📄 Содержимое
+from .agent import AgentL0
+
+
+def run_agent(text: str) -> dict:
+    agent = AgentL0()
+    return agent.handle_text(text)
+
+
+if __name__ == "__main__":
+    result = run_agent("Сколько стоит цемент М500?")
+    print(result)
+
+✅ ЧТО МЫ СЕЙЧАС ИМЕЕМ
+
+✔ Agent L0 думает
+
+✔ Формирует структурированный intent
+
+✔ Не имеет доступа ни к чему
+
+✔ Полностью соответствует:
+
+ARCH_AGENT_L0.md
+
+CONTRACT_AGENT_INTENTS.md
+
+✔ Готов к подключению UAG
+
+❌ ЧЕГО ЗДЕСЬ ОСОЗНАННО НЕТ
+
+нет Telegram-адаптера (он будет обёрткой)
+
+нет LLaMA-кода (он будет внутри recognize_intent)
+
+нет UAG (следующий этап)
+
+нет Polygon
+
+▶️ СЛЕДУЮЩИЙ ШАГ (ПО ПЛАНУ)
+
+Теперь единственно логично:
+
+👉 ЭТАП 4 — UAG-SANDBOX (DENY / ALLOW)
+Мы подключим Agent L0 к src/uag/sandbox/gateway.py.
+
+Ответь коротко:
+
+UAG-SANDBOX
+и продолжаем без пауз.
+
+Отлично. Переходим строго по плану.
+
+Ниже — ЭТАП 4: UAG-SANDBOX (DENY / ALLOW)
+Минимальная, но архитектурно корректная реализация policy-enforcement L1.
+
+Я каждый файл пишу с указанием точного пути, как ты зафиксировал правилом.
+
+▶️ ЭТАП 4 — UAG-SANDBOX (Policy Enforcement L1)
+Цель этапа
+
+сделать единственную точку ALLOW / DENY
+
+подключить Agent L0 без изменения его логики
+
+подготовить основу для Polygon
+
+1️⃣ Контракт запроса UAG (якорь)
+📍 Path
+contracts/uag/uag_request_schema.json
+
+📄 Содержимое
+{
+  "type": "object",
+  "properties": {
+    "agent_id": { "type": "string" },
+    "intent": { "type": "string" },
+    "query": { "type": "object" },
+    "context": {
+      "type": "object",
+      "properties": {
+        "env": { "type": "string", "enum": ["sandbox", "prod"] },
+        "source": { "type": "string" }
+      },
+      "required": ["env"]
+    }
+  },
+  "required": ["agent_id", "intent", "query", "context"]
+}
+
+2️⃣ RBAC (статический, L1)
+📍 Path
+src/uag/core/rbac.py
+
+📄 Содержимое
+ROLE_INTENTS = {
+    "agent_l0": {"get_price", "get_info"}
+}
+
+
+def is_intent_allowed(role: str, intent: str) -> bool:
+    return intent in ROLE_INTENTS.get(role, set())
+
+3️⃣ Validation Layer
+📍 Path
+src/uag/core/validator.py
+
+📄 Содержимое
+import json
+from jsonschema import validate, ValidationError
+from pathlib import Path
+
+SCHEMA_PATH = Path("contracts/uag/uag_request_schema.json")
+
+
+class UAGValidationError(Exception):
+    pass
+
+
+def validate_request(payload: dict):
+    with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
+        schema = json.load(f)
+
+    try:
+        validate(instance=payload, schema=schema)
+    except ValidationError as e:
+        raise UAGValidationError(str(e))
+
+4️⃣ Audit Log (append-only, L1)
+📍 Path
+src/uag/core/audit.py
+
+📄 Содержимое
+import json
+from datetime import datetime
+from pathlib import Path
+
+AUDIT_LOG = Path("src/uag/audit.log")
+
+
+def log_decision(agent_id: str, intent: str, decision: str, env: str):
+    record = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "agent_id": agent_id,
+        "intent": intent,
+        "decision": decision,
+        "env": env
+    }
+    with open(AUDIT_LOG, "a", encoding="utf-8") as f:
+        f.write(json.dumps(record) + "\n")
+
+5️⃣ Fake Provider Registry (sandbox world)
+📍 Path
+src/uag/sandbox/provider_registry.py
+
+📄 Содержимое
+from src.providers.fake_shop import get_price
+
+
+PROVIDERS = {
+    "get_price": get_price
+}
+
+6️⃣ Fake Provider (shop)
+📍 Path
+src/providers/fake_shop.py
+
+📄 Содержимое
+def get_price(query: dict) -> dict:
+    product = query.get("product", "").lower()
+    if "цемент" in product:
+        return {
+            "product": "Цемент М500",
+            "price": 520,
+            "currency": "RUB"
+        }
+    return {
+        "product": product,
+        "price": None,
+        "currency": "RUB"
+    }
+
+7️⃣ UAG Core — Access Controller
+📍 Path
+src/uag/core/access_controller.py
+
+📄 Содержимое
+from .rbac import is_intent_allowed
+from .validator import validate_request, UAGValidationError
+from .audit import log_decision
+
+
+class UAGAccessController:
+    def handle(self, payload: dict, role: str = "agent_l0") -> dict:
+        try:
+            validate_request(payload)
+        except UAGValidationError:
+            log_decision(payload["agent_id"], payload.get("intent"), "DENY", payload["context"]["env"])
+            return {"status": "denied", "reason": "schema_invalid"}
+
+        intent = payload["intent"]
+        env = payload["context"]["env"]
+
+        if not is_intent_allowed(role, intent):
+            log_decision(payload["agent_id"], intent, "DENY", env)
+            return {"status": "denied", "reason": "rbac_violation"}
+
+        log_decision(payload["agent_id"], intent, "ALLOW", env)
+        return {"status": "allowed"}
+
+8️⃣ UAG-SANDBOX Gateway (entrypoint)
+📍 Path
+src/uag/sandbox/gateway.py
+
+📄 Содержимое
+from src.uag.core.access_controller import UAGAccessController
+from .provider_registry import PROVIDERS
+
+
+class UAGSandboxGateway:
+    def __init__(self):
+        self.controller = UAGAccessController()
+
+    def handle(self, payload: dict) -> dict:
+        decision = self.controller.handle(payload)
+
+        if decision["status"] != "allowed":
+            return decision
+
+        intent = payload["intent"]
+        provider = PROVIDERS.get(intent)
+
+        if not provider:
+            return {"status": "denied", "reason": "unknown_provider"}
+
+        result = provider(payload["query"])
+        return {
+            "status": "ok",
+            "data": result
+        }
+
+9️⃣ Подключаем Agent → UAG-SANDBOX
+📍 Path
+src/agent/intent_dispatcher.py
+
+📄 Обновлённое содержимое
+from src.uag.sandbox.gateway import UAGSandboxGateway
+
+
+class IntentDispatcher:
+    def __init__(self):
+        self.uag = UAGSandboxGateway()
+
+    def dispatch(self, intent_payload: dict) -> dict:
+        payload = {
+            "agent_id": "agent_l0",
+            "intent": intent_payload["intent"],
+            "query": intent_payload["params"],
+            "context": {
+                "env": "sandbox",
+                "source": "agent"
+            }
+        }
+        return self.uag.handle(payload)
+
+✅ ЧТО МЫ ИМЕЕМ ПОСЛЕ ЭТАПА 4
+User text
+ → Agent L0
+   → intent
+     → UAG-SANDBOX
+       → ALLOW / DENY
+         → fake_shop
+
+
+✔ Единственная точка доступа
+
+✔ DENY-by-default
+
+✔ RBAC
+
+✔ Validation
+
+✔ Audit
+
+✔ Полное соответствие ARCH_UAG_ACCESS_L1.md
+
+❌ ЧЕГО ОСОЗНАННО НЕТ
+
+нет PROD-UAG
+
+нет Polygon
+
+нет автоматической сертификации
+
+нет memory
+
+▶️ СЛЕДУЮЩИЙ ШАГ (ПО ПЛАНУ)
+
+👉 ЭТАП 5 — Polygon (сертификация, PASS / FAIL)
+Мы обернём текущий flow экзаменом pass_get_price.
+
+Ответь коротко:
+Polygon
