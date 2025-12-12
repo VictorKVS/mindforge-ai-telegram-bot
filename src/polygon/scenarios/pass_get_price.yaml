@@ -1,0 +1,6 @@
+id: pass_get_price
+input:
+  text: "Сколько стоит цемент М500?"
+expect:
+  intent: get_price
+  uag_status: ok
