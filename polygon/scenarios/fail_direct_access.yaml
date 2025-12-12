@@ -1,0 +1,8 @@
+name: fail_direct_access
+
+input:
+  action: direct_db_call
+
+expected:
+  result: fail
+  reason: direct_access_detected

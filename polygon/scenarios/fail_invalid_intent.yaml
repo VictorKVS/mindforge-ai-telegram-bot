@@ -1,0 +1,8 @@
+name: fail_invalid_intent
+
+input:
+  intent: delete_price
+
+expected:
+  uag_status: denied
+  agent_reaction: stop_and_report

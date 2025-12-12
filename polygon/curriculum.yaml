@@ -1,0 +1,11 @@
+level: L1
+name: agent_basic_discipline
+
+requirements:
+  - use_uag_only
+  - intent_required
+  - schema_valid
+  - deny_handled_correctly
+
+pass_condition:
+  all_scenarios_passed
