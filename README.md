@@ -280,3 +280,13 @@ This entire README is the English version.
 🇷🇺 Русская версия
 
 Полная локализация будет добавлена по запросу.
+
+## Status
+L1 in progress  
+Agent L0 + UAG-SANDBOX implemented  
+Polygon certification – next
+
+
+## Status
+L1: Agent L0 + UAG-SANDBOX + Polygon (PASS/FAIL) — ready for integration tests
+
