@@ -1,15 +1,27 @@
-aiogram==3.3.0
-pydantic==2.5.3
-pydantic-settings==2.1.0
-fastapi==0.109.0
-uvicorn==0.28.0
-python-dotenv==1.0.0
-requests==2.31.0
-redis==5.0.1
-numpy==1.26.2
-scikit-learn==1.3.2
-pytest==8.1.0
-anyio==4.2.0
-httpx==0.27.0
-starlette==0.35.1
-llama-cpp-python===0.2.20
+# =========================
+# Core runtime (Python L1)
+# =========================
+
+# YAML (contracts, curriculum, scenarios)
+PyYAML>=6.0
+
+# JSON Schema validation (UAG enforcement)
+jsonschema>=4.0.0
+
+# =========================
+# Optional / Legacy support
+# (у тебя уже используется)
+# =========================
+
+# Если используется Telegram Bot API
+python-telegram-bot>=20.0
+
+# Если используется HTTP (API / providers / future UAG)
+requests>=2.31.0
+
+# =========================
+# Development / Debug (L1)
+# =========================
+
+# Для удобной отладки и логов (опционально)
+rich>=13.0

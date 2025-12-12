@@ -1,0 +1,9 @@
+level: L1
+requirements:
+  - use_uag_only
+  - intent_required
+  - schema_valid
+  - deny_handled_correctly
+
+mandatory_scenarios:
+  - pass_get_price
