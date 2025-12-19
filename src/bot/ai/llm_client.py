@@ -1,72 +1,84 @@
 """
-LLM Client module: supports both mock LLM (for tests)
-and Local LLaMA model via llama-cpp-python.
+LLM Client module:
+- supports mock LLM (tests / fallback)
+- supports Local LLaMA via llama-cpp-python (GGUF)
 """
 
+from pathlib import Path
+import asyncio
 from llama_cpp import Llama
 from src.bot.config import settings
 
 
 # -------------------------------------------------------------------
-# 1. MOCK CLIENT (для тестов)
+# 1. MOCK CLIENT (для тестов / fallback)
 # -------------------------------------------------------------------
 class LLMClient:
-    """Mock LLM client for tests."""
+    """Mock LLM client."""
 
-    def get_context(self, query: str):
-        # Тестовая модель всегда возвращает один и тот же контекст
-        return ["Mock context"]
-
-    def generate(self, prompt: str):
-        # Тесты ожидают строго такую структуру ответа
-        context = self.get_context(prompt)[0]
-        return f"LLM response to: {prompt}\nContext: {context}"
+    def generate(self, prompt: str) -> str:
+        return f"[MOCK LLM] Response to: {prompt}"
 
 
 # -------------------------------------------------------------------
 # 2. Local LLaMA Client
 # -------------------------------------------------------------------
 class LocalLLMClient:
-    """Local LLaMA model using llama-cpp-python (GGUF)."""
+    """Local LLaMA model using llama-cpp-python."""
 
     def __init__(self):
+        self._model = None
+
+    def _load_model(self):
+        if self._model is not None:
+            return
+
         print("🔥 Local LLaMA loading...")
 
-        self.model = Llama(
-            model_path=settings.LOCAL_LLM_MODEL_PATH,
-            n_ctx=settings.LOCAL_LLM_CTX,
-            n_threads=settings.LOCAL_LLM_THREADS,
-            n_gpu_layers=settings.LOCAL_LLM_GPU_LAYERS,
+        model_path = Path(settings.LOCAL_LLM_MODEL_PATH).resolve()
+
+        if not model_path.exists():
+            raise RuntimeError(
+                f"Local LLaMA model not found: {model_path}"
+            )
+
+        self._model = Llama(
+            model_path=str(model_path),
+            n_ctx=getattr(settings, "LOCAL_LLM_CTX", 4096),
+            n_threads=getattr(settings, "LOCAL_LLM_THREADS", 8),
+            n_gpu_layers=0,  # SAFE DEFAULT (portable)
             verbose=False,
         )
 
         print("✅ Local LLaMA loaded!")
 
     async def generate(self, prompt: str) -> str:
-        """Generate text using the local LLaMA model."""
-        output = self.model(
-            prompt,
-            max_tokens=256,
-            temperature=0.7,
+        """Async-safe text generation."""
+
+        self._load_model()
+
+        loop = asyncio.get_running_loop()
+        output = await loop.run_in_executor(
+            None,
+            lambda: self._model(
+                prompt,
+                max_tokens=256,
+                temperature=0.7,
+            ),
         )
 
         return output["choices"][0]["text"].strip()
 
 
 # -------------------------------------------------------------------
-# 3. Factory — выбираем клиента
+# 3. Factory
 # -------------------------------------------------------------------
 def get_llm_client():
-    """
-    Выбирает модель:
-      - если LOCAL_LLM_ENABLED = true → LocalLLM
-      - иначе → Mock LLM (для тестов)
-    """
     if getattr(settings, "LOCAL_LLM_ENABLED", False):
         return LocalLLMClient()
 
     return LLMClient()
 
 
-# Единственный экземпляр — используется по всему проекту
+# Singleton
 llm_client = get_llm_client()

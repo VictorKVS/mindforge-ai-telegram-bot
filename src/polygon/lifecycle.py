@@ -1,19 +1,12 @@
+# src/polygon/lifecycle.py
+
 class AgentLifecycle:
-    PENDING = "PENDING"
+    CERTIFIED_L1 = "CERTIFIED"
     IN_TRIAL = "IN_TRIAL"
-    CERTIFIED = "CERTIFIED"
-    BLOCKED = "BLOCKED"
+    CERTIFIED_L2 = "CERTIFIED_L2"
+    FAIL = "FAIL"
+    SUSPENDED = "SUSPENDED"
 
-    def __init__(self):
-        self.state = self.PENDING
-
-    def start_trial(self):
-        if self.state != self.PENDING:
-            raise RuntimeError("Invalid lifecycle transition")
-        self.state = self.IN_TRIAL
-
-    def certify(self):
-        self.state = self.CERTIFIED
-
-    def block(self):
-        self.state = self.BLOCKED
+    @staticmethod
+    def can_start_l2(state: str) -> bool:
+        return state == AgentLifecycle.CERTIFIED_L1

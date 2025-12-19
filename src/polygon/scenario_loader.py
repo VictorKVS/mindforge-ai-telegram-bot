@@ -1,10 +1,9 @@
-import yaml
-from pathlib import Path
+# --- L3 scenarios loader ---
 
-SCENARIOS_DIR = Path("src/polygon/scenarios")
+from src.polygon.scenarios.pass_agent_to_agent_info import PassAgentToAgentInfo
 
 
-def load_scenario(scenario_id: str) -> dict:
-    path = SCENARIOS_DIR / f"{scenario_id}.yaml"
-    with open(path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+def load_l3_scenarios():
+    return [
+        PassAgentToAgentInfo(),
+    ]

@@ -1,51 +1,33 @@
 # src/bot/bot.py
 
 import asyncio
-import logging
-
-from aiogram import Bot, Dispatcher, F
-from aiogram.fsm.storage.memory import MemoryStorage
-
+from aiogram import Bot, Dispatcher
 from src.bot.config import settings
-from src.bot.handlers.security_filter import SecurityFilter
-from src.bot.handlers.assistant_handler import router as assistant_router
-from src.bot.handlers.task_handler import router as task_router
 
+# Routers
+from src.bot.handlers.start_menu import router as start_router
+from src.bot.handlers.training_center import router as training_router
+from src.bot.handlers.scenarios import router as scenario_router
+from src.bot.handlers.calendar import router as calendar_router
 
-logging.basicConfig(level="INFO")
-logger = logging.getLogger("MindForgeBot")
+from src.bot.handlers.calendar_handler import router as calendar_router
+dp.include_router(calendar_router)
 
+from src.bot.handlers.scenario_player import router as scenario_player_router
+dp.include_router(scenario_player_router)
 
 async def main():
-    bot = Bot(token=settings.TELEGRAM_TOKEN, parse_mode="HTML")
-    dp = Dispatcher(storage=MemoryStorage())
+    bot = Bot(token=settings.TELEGRAM_TOKEN)
+    dp = Dispatcher()
 
-    security = SecurityFilter()
+    # Порядок важен
+    dp.include_router(start_router)
+    dp.include_router(training_router)
+    dp.include_router(scenario_router)
+    dp.include_router(calendar_router)
 
-    # ---------------------------------------------------
-    # 1) SECURITY FILTER — обрабатывает ТОЛЬКО обычные сообщения, НЕ команды
-    # ---------------------------------------------------
-    @dp.message(F.text & ~F.text.startswith("/"))
-    async def security_check(message):
-        text = message.text or ""
-
-        if not security.check(text):
-            await message.answer("⚠️ Сообщение заблокировано системой безопасности KM-6.")
-            return
-
-        # безопасное сообщение → пропускаем дальше
-        pass
-
-    # ---------------------------------------------------
-    # 2) РЕГИСТРАЦИЯ РОУТЕРОВ
-    # ---------------------------------------------------
-    dp.include_router(assistant_router)   # /start, /help, /ask…
-    dp.include_router(task_router)        # задачи + фундамент
-
-    logger.info("🚀 MindForge Assistant started")
+    print("🚀 SpaceAI Training Center started")
     await dp.start_polling(bot)
-
 
 if __name__ == "__main__":
     asyncio.run(main())
-

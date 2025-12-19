@@ -1,0 +1,105 @@
+{
+    "agent_id": "agent_master_001",
+    "agent_type": "user",
+    "display_name": "Master Alex",
+    "role": "bricklayer",
+    "current_level": 3,
+
+    "access": {
+        "0": {
+            "visibility": "blocked",
+            "message": "Access denied. Request access."
+        },
+        "1": {
+            "name": "Alex",
+            "role": "Master",
+            "contacts": {
+                "telegram": "@alex"
+            }
+        },
+        "2": {
+            "name": "Alex Petrov",
+            "role": "Construction Master",
+            "contacts": {
+                "phone": "+371-XXX-XX-XX",
+                "telegram": "@alex",
+                "email": "example@mail.com"
+            },
+            "services_overview": [
+                "Кладка кирпича",
+                "Фундаментные работы"
+            ],
+            "price_range": "от 20 €/час"
+        },
+        "3": {
+            "services": {
+                "Кладка кирпича": 20,
+                "Фундамент под ключ": 750,
+                "Ремонтные работы": 18
+            },
+            "inventory": {
+                "brick_m100": 200,
+                "laser_level": 1,
+                "cement_25kg": 5
+            },
+            "schedule": {
+                "today": "busy",
+                "tomorrow": "free_after_14"
+            },
+            "permissions": [
+                "make_order",
+                "view_inventory",
+                "request_booking",
+                "send_ad"
+            ]
+        },
+        "4": {
+            "team": [
+                "agent_worker_001",
+                "agent_worker_002"
+            ],
+            "equipment_rent": {
+                "cement_mixer": 15,
+                "electric_saw": 12
+            },
+            "bulk_discounts": true,
+            "permissions": [
+                "manage_tasks",
+                "edit_orders",
+                "team_coordination"
+            ]
+        },
+        "5": {
+            "logistics": true,
+            "supplier_api_access": true,
+            "workflow_templates": [
+                "foundation_team",
+                "brickwall_team"
+            ],
+            "permissions": [
+                "manage_schedule",
+                "logistics_control",
+                "supplier_negotiation"
+            ]
+        },
+        "6": {
+            "financial_data": true,
+            "business_control": {
+                "departments": 3,
+                "agents_under_management": 12,
+                "active_contracts": 4
+            },
+            "strategy_tools": [
+                "optimization",
+                "forecasting",
+                "planning"
+            ],
+            "permissions": [
+                "manage_company",
+                "view_finances",
+                "premium_tools",
+                "full_api"
+            ]
+        }
+    }
+}

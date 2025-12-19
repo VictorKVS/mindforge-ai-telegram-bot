@@ -1,6 +1,13 @@
-def evaluate(result: dict) -> bool:
-    if result.get("status") != "ok":
-        return False
-    if "price" not in result.get("data", {}):
-        return False
-    return True
+# src/polygon/evaluator.py
+
+class EvaluationResult:
+    def __init__(self):
+        self.failed = False
+        self.suspended = False
+        self.violations = []
+
+    def register_fail(self, reason, critical=False):
+        self.failed = True
+        self.violations.append(reason)
+        if critical:
+            self.suspended = True

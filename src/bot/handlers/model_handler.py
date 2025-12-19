@@ -169,7 +169,7 @@ async def task_list(message: types.Message):
     await message.answer(txt, parse_mode="HTML")
 
 
-@router.message(Command("taskstatus")))
+@router.message(Command("taskstatus"))
 async def task_status(message: types.Message):
     parts = message.text.split(maxsplit=1)
     if len(parts) < 2 or not parts[1].isdigit():

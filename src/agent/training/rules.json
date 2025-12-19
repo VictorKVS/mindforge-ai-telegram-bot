@@ -1,0 +1,41 @@
+{
+  "training_events": [
+    {
+      "name": "Successful brick order",
+      "trigger": "order_bricks_success",
+      "actions": {
+        "add_skill": "fast_brick_calculation"
+      }
+    },
+    {
+      "name": "Repeated foundation requests",
+      "trigger": "foundation_request",
+      "actions": {
+        "add_service": {
+          "name": "Фундамент под ключ PRO",
+          "price": 1200
+        }
+      }
+    },
+    {
+      "name": "Adjust bricklaying price",
+      "trigger": "price_feedback_negative",
+      "actions": {
+        "adjust_price": {
+          "service": "Кладка кирпича",
+          "delta": -2
+        }
+      }
+    },
+    {
+      "name": "Tool usage training",
+      "trigger": "tool_used",
+      "actions": {
+        "update_inventory": {
+          "item": "tool_usage_count",
+          "delta": 1
+        }
+      }
+    },
+    {
+      "name": "First successful order",

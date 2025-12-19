@@ -1,0 +1,31 @@
+t the credentials and/or project id if they weren't specified
+        if credentials is None:
+            credentials = _creds
+
+        if project_id is None:
+            if isinstance(_project_id, str):
+                project_id = _project_id
+            else:
+                raise AttributeError(
+                    'project_id is required to be specified either as an argument or from the google.auth.default. See https://google-auth.readthedocs.io/en/master/reference/google.auth.html#google.auth.default'
+                )
+
+        self._credentials: Credentials = credentials
+        self._project_id: str = project_id
+
+        if secret_client:
+            self._secret_client = secret_client
+        else:
+            self._secret_client = SecretManagerServiceClient(credentials=self._credentials)
+
+        super().__init__(
+            settings_cls,
+            case_sensitive=case_sensitive,
+            env_prefix=env_prefix,
+            env_ignore_empty=False,
+            env_parse_none_str=env_parse_none_str,
+            env_parse_enums=env_parse_enums,
+        )
+
+    def _load_env_vars(self) -> Mapping[str, str | None]:
+        return 
