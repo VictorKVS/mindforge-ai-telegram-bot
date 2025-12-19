@@ -62,7 +62,7 @@ KR API Retrieval Engine
 Shared Enterprise Knowledge Base
 
 This makes the bot compliant, auditable, predictable, and safe.
-
+"""
 🏗 Architecture
 User
   ↓
@@ -95,7 +95,7 @@ LLM (OpenAI / Qwen / LLaMA / Mistral)
   ↓
 Response → UAG → Bot → User
 
-
+"""
 Именно такая цепочка обеспечивает контроль, безопасность, контекст, прозрачность, отказоустойчивость.
 
 🔒 Security Model (Zero-Trust AI)
