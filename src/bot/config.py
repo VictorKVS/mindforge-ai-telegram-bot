@@ -1,4 +1,16 @@
-import os
+# src/bot/config.py
+"""
+File: G:\\agent-ecosystem-crkfl\\mindforge-ai-telegram-bot\\src\\bot\\config.py
+
+Purpose:
+Centralized configuration loader for MindForge Telegram Bot.
+
+Responsibilities:
+- Load configuration from .env
+- Provide single settings object for the whole application
+- Support runtime overrides (e.g. --demo mode)
+"""
+
 from pydantic_settings import BaseSettings
 
 
@@ -7,6 +19,12 @@ class Settings(BaseSettings):
     # TELEGRAM BOT
     # -------------------------------------------------------------
     TELEGRAM_TOKEN: str = ""
+
+    # -------------------------------------------------------------
+    # RUNTIME / ENVIRONMENT
+    # -------------------------------------------------------------
+    APP_ENV: str = "prod"                 # prod | demo
+    DEFAULT_POLICY_MODE: str = "STRICT"   # STRICT | DEMO | OFF
 
     # -------------------------------------------------------------
     # LOCAL LLaMA CONFIG
@@ -32,5 +50,22 @@ class Settings(BaseSettings):
         env_file_encoding = "utf-8"
 
 
-# Глобальный синглтон настроек
+# -----------------------------------------------------------------
+# Global singleton settings
+# -----------------------------------------------------------------
 settings = Settings()
+
+
+def override_for_demo() -> None:
+    """
+    Runtime override for DEMO mode.
+
+    This function is called when the application
+    is started with the --demo flag.
+
+    It DOES NOT modify .env.
+    It ONLY affects in-memory configuration.
+    """
+    settings.APP_ENV = "demo"
+    settings.DEFAULT_POLICY_MODE = "DEMO"
+

@@ -11,22 +11,16 @@ __pycache__/
 .vscode/
 .idea/
 
-# Docker artifacts
-*.log
+# Virtual environment
+.venv/
 
-# OS trash
-Thumbs.db
-.DS_Store
+# Logs
+logs/
 
-# Build artifacts
-dist/
-build/
-
-# Documentation local cache
-site/
-
+# Models
 models/
 *.gguf
 *.bin
 *.pt
 *.safetensors
+
