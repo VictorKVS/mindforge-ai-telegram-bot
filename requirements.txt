@@ -2,6 +2,10 @@
 # Core runtime (Python L1)
 # =========================
 
+# Configuration & validation
+pydantic>=2.7.0
+pydantic-settings>=2.3.0
+
 # YAML (contracts, curriculum, scenarios)
 PyYAML>=6.0
 
@@ -9,22 +13,24 @@ PyYAML>=6.0
 jsonschema>=4.0.0
 
 # =========================
-# Optional / Legacy support
-# (у тебя уже используется)
+# Telegram
 # =========================
 
-# Если используется Telegram Bot API
-python-telegram-bot>=20.0
+# Modern Telegram framework (USED)
+aiogram==3.8.0
 
-# Если используется HTTP (API / providers / future UAG)
+# ❌ НЕ ИСПОЛЬЗОВАТЬ вместе с aiogram
+# python-telegram-bot>=20.0
+
+# =========================
+# HTTP / Integrations
+# =========================
+
 requests>=2.31.0
 
 # =========================
-# Development / Debug (L1)
+# Development / Debug
 # =========================
 
-# Для удобной отладки и логов (опционально)
 rich>=13.0
-
-aiogram==3.8.0
-python-dotenv
+python-dotenv>=1.0

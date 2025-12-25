@@ -20,6 +20,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from src.core.runtime_state import STATE
 from src.core.audit_log import record_event
+from src.core.logger import logger
 
 router = Router()
 
@@ -102,3 +103,18 @@ async def handle_agent_off(callback: CallbackQuery):
         parse_mode="Markdown",
     )
     await callback.answer("Агент остановлен")
+@router.callback_query(F.data == CB_AGENT_ON)
+async def handle_agent_on(callback: CallbackQuery):
+    logger.info(
+        f"AGENT_CONTROL ENABLE "
+        f"user_id={callback.from_user.id}"
+    )
+
+    await STATE.set_agent_enabled(True)
+
+    record_event(
+        action="agent_enable",
+        decision="ALLOW",
+        policy="CONTROL_PLANE",
+        reason="Agent enabled by operator",
+    )

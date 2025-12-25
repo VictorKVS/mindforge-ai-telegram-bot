@@ -7,8 +7,9 @@ Centralized configuration loader for MindForge Telegram Bot.
 
 Responsibilities:
 - Load configuration from .env
-- Provide single settings object for the whole application
+- Provide a single settings object for the whole application
 - Support runtime overrides (e.g. --demo mode)
+- Act as the single source of truth for runtime configuration
 """
 
 from pydantic_settings import BaseSettings
@@ -19,6 +20,14 @@ class Settings(BaseSettings):
     # TELEGRAM BOT
     # -------------------------------------------------------------
     TELEGRAM_TOKEN: str = ""
+    AGENT_NAME: str = "MindForge-Demo-Agent"
+
+    #  -------------------------------------------------------------
+    # APPLICATION / BRANDING
+    # -------------------------------------------------------------
+    APP_VERSION: str = "0.0.0"
+    BRAND_PROFILE: str = "default"   # default | partner_x | demo | etc
+
 
     # -------------------------------------------------------------
     # RUNTIME / ENVIRONMENT
@@ -27,7 +36,7 @@ class Settings(BaseSettings):
     DEFAULT_POLICY_MODE: str = "STRICT"   # STRICT | DEMO | OFF
 
     # -------------------------------------------------------------
-    # LOCAL LLaMA CONFIG
+    # LOCAL LLaMA CONFIG (future use)
     # -------------------------------------------------------------
     LOCAL_LLM_ENABLED: bool = False
     LOCAL_LLM_MODEL_PATH: str = "./models/llama/model.gguf"
@@ -36,7 +45,7 @@ class Settings(BaseSettings):
     LOCAL_LLM_GPU_LAYERS: int = 0
 
     # -------------------------------------------------------------
-    # API (RAG, UAG и прочие сервисы)
+    # API (RAG / UAG / external services)
     # -------------------------------------------------------------
     KR_API_URL: str = "http://localhost:8000/rag/query"
 
@@ -48,6 +57,14 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+
+    # -------------------------------------------------------------
+    # FEATURE FLAGS (UI / DEMO / PRODUCT)
+    # -------------------------------------------------------------
+    FEATURE_AUDIT_PANEL: bool = True
+    FEATURE_STATUS_PANEL: bool = True
+    FEATURE_AGENT_CONTROL: bool = True
+
 
 
 # -----------------------------------------------------------------
@@ -63,9 +80,10 @@ def override_for_demo() -> None:
     This function is called when the application
     is started with the --demo flag.
 
-    It DOES NOT modify .env.
-    It ONLY affects in-memory configuration.
+    IMPORTANT:
+    - Does NOT modify .env
+    - Only mutates the in-memory settings object
     """
+
     settings.APP_ENV = "demo"
     settings.DEFAULT_POLICY_MODE = "DEMO"
-

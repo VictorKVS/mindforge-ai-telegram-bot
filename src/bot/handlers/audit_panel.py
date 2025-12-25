@@ -17,7 +17,7 @@ from aiogram import Router, F
 from aiogram.types import CallbackQuery
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from src.core.audit_log import get_last_events
+from src.core.audit_log import get_events
 
 router = Router()
 
@@ -60,7 +60,7 @@ def render_audit_events(events: list[dict]) -> str:
             f"{status_icon} *{e['decision']}*\n"
             f"• Action: `{e['action']}`\n"
             f"• Policy: `{e['policy']}`\n"
-            f"• Time: `{e['timestamp']}`"
+            f"• Time (UTC): `{e['timestamp_utc']}`"
         )
 
     return "\n\n".join(lines)
@@ -74,7 +74,7 @@ async def open_audit_panel(callback: CallbackQuery):
     """
     Open audit panel.
     """
-    events = get_last_events(limit=5)
+    events = get_events(limit=5)
 
     text = (
         "🛡 *Security / Audit Panel*\n\n"
@@ -95,7 +95,7 @@ async def refresh_audit_panel(callback: CallbackQuery):
     """
     Refresh audit panel content.
     """
-    events = get_last_events(limit=5)
+    events = get_events(limit=5)
 
     text = (
         "🛡 *Security / Audit Panel*\n\n"
