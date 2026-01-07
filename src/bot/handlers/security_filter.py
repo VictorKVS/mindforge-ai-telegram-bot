@@ -1,31 +1,58 @@
-import math
+# src/bot/handlers/security_filter.py
+
+import re
+import logging
+
 
 class SecurityFilter:
-    blocked_keywords = [
-        "ignore previous instructions",
-        "jailbreak",
-        "do anything now"
-    ]
+    """
+    Минимальная промышленная версия фильтра KM-6.
+    Задача: отсеивать опасные сообщения, содержащие запросы
+    на jailbreak, отключение фильтров, выполнение команд и т.п.
+    """
 
+    def __init__(self):
+        # Базовый набор запрещённых шаблонов.
+        # Можно расширять для KM-6 профиля.
+        self.forbidden_patterns = [
+            r"ignore all previous instructions",
+            r"forget previous",
+            r"please jailbreak",
+            r"disable filter",
+            r"отключи.*безопасность",
+            r"system:",
+            r"sudo rm -rf",
+            r"cmd\.exe",
+            r"powershell",
+            r"eval\(",
+            r"assert\(",
+            r"execution",
+            r"run this code",
+            r"выполни команду",
+            r"скажи что ты можешь нарушить",
+        ]
+
+        self.logger = logging.getLogger("SecurityFilter")
+
+    # ----------------------------------------------------------
+    # Основная проверка сообщения
+    # ----------------------------------------------------------
     def check(self, text: str) -> bool:
-        lowered = text.lower()
+        """
+        Проверяет входящий текст на запрещённые паттерны.
+        Возвращает True, если сообщение безопасно.
+        """
 
-        # 1. Jailbreak detection
-        for bad in self.blocked_keywords:
-            if bad in lowered:
+        if not text:
+            return True  # пустое сообщение безопасно
+
+        # Нормализуем текст (безопасная практика)
+        normalized = text.lower().strip()
+
+        # Ищем запрещённые слова / паттерны
+        for pattern in self.forbidden_patterns:
+            if re.search(pattern, normalized, re.IGNORECASE):
+                self.logger.warning(f"[SECURITY] Blocked message: {text}")
                 return False
 
-        # 2. Entropy detection — усилили порог
-        if self._entropy(text) > 3.3:   # ↓ threshold for test
-            return False
-
         return True
-
-    def _entropy(self, text: str) -> float:
-        if not text:
-            return 0.0
-
-        freq = {c: text.count(c) for c in set(text)}
-        length = len(text)
-
-        return -sum((count/length) * math.log2(count/length) for count in freq.values())

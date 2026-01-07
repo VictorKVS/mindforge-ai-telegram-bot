@@ -62,7 +62,7 @@ KR API Retrieval Engine
 Shared Enterprise Knowledge Base
 
 This makes the bot compliant, auditable, predictable, and safe.
-"""
+
 🏗 Architecture
 User
   ↓
@@ -95,7 +95,7 @@ LLM (OpenAI / Qwen / LLaMA / Mistral)
   ↓
 Response → UAG → Bot → User
 
-"""
+
 Именно такая цепочка обеспечивает контроль, безопасность, контекст, прозрачность, отказоустойчивость.
 
 🔒 Security Model (Zero-Trust AI)
@@ -280,3 +280,13 @@ This entire README is the English version.
 🇷🇺 Русская версия
 
 Полная локализация будет добавлена по запросу.
+
+## Status
+L1 in progress  
+Agent L0 + UAG-SANDBOX implemented  
+Polygon certification – next
+
+
+## Status
+L1: Agent L0 + UAG-SANDBOX + Polygon (PASS/FAIL) — ready for integration tests
+

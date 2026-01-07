@@ -1,0 +1,26 @@
+rules:
+  - id: RULE-DEMO-01
+    description: "Запрет исполнения в DEMO режиме"
+    when:
+      mode: DEMO
+      action_prefix: "execute_"
+    decision: DENY
+    policy: DEMO
+    message: "Исполнение заблокировано в DEMO режиме"
+
+  - id: RULE-TRUST-01
+    description: "Недостаточный уровень доверия"
+    when:
+      min_trust: 4
+      action: "demo_activate_pro"
+    decision: DENY
+    policy: TRUST
+    message: "Недостаточный уровень доверия"
+
+  - id: RULE-INFO-01
+    description: "Пояснение для dashboard"
+    when:
+      action: "why_dashboard"
+    decision: INFO
+    policy: UAG
+    message: "Пояснение архитектуры UAG"
