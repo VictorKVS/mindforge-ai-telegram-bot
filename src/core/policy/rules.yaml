@@ -1,26 +1,25 @@
 rules:
-  - id: RULE-DEMO-01
-    description: "Запрет исполнения в DEMO режиме"
+
+  # ALLOW UI
+  - id: RULE-ALLOW-DEMO-UI
+    policy: UAG
+    priority: 1000
+    action_prefix: "demo."
+    decision: ALLOW
+    reason_code: ALLOW_DEMO_UI
+    reason_human: "Разрешено: действия интерфейса DEMO"
     when:
       mode: DEMO
-      action_prefix: "execute_"
-    decision: DENY
+
+  # DENY execution
+  - id: RULE-DEMO-01
     policy: DEMO
-    message: "Исполнение заблокировано в DEMO режиме"
-
-  - id: RULE-TRUST-01
-    description: "Недостаточный уровень доверия"
-    when:
-      min_trust: 4
-      action: "demo_activate_pro"
+    priority: 900
+    action_prefix: "purchase.execute"
     decision: DENY
-    policy: TRUST
-    message: "Недостаточный уровень доверия"
-
-  - id: RULE-INFO-01
-    description: "Пояснение для dashboard"
+    reason_code: DEMO_EXECUTION_BLOCKED
+    reason_human: "Исполнение заблокировано в DEMO режиме"
+    how_to_fix: "Активируйте PRO лицензию"
     when:
-      action: "why_dashboard"
-    decision: INFO
-    policy: UAG
-    message: "Пояснение архитектуры UAG"
+      mode: DEMO
+

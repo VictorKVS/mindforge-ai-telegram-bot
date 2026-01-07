@@ -1,5 +1,6 @@
+# src/core/policy/context.py
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from typing import Dict, Any, Optional
 
 
 @dataclass
@@ -9,6 +10,6 @@ class PolicyContext:
     username: str
     action: str
     state: Optional[str]
-    mode: str
+    mode: str                  # DEMO | PROD
     trust_level: int
     payload: Dict[str, Any]
